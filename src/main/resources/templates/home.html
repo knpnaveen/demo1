@@ -1,9 +1,57 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
-    <title>Spring Security Example</title>
+    <title>Enquiry Portal</title>
+    <link th:rel="stylesheet" th:href="@{assets/select2-develop/dist/css/select2.css}"/>
+    <link th:rel="stylesheet" th:href="@{assets/select2-bootstrap4-theme-master/dist/select2-bootstrap4.css}"/>
+    <link th:rel="stylesheet" th:href="@{webjars/bootstrap/4.0.0-2/css/bootstrap.min.css} "/>
 </head>
 <body>
-<h1>Welcome!</h1>
+<h1>
+<div style="text-align:center">
+    <div style="display:inline">Welcome!</div> <div style="display:inline" sec:authentication="name"></div>
+</div>
+</h1>
+<div th:if="${not #lists.isEmpty(enquiries)}">
+    <h2>Enquiries List</h2>
+    <table class="table table-striped">
+        <tr>
+            <th>Id</th>
+            <th>Name</th>
+            <th>Job Type</th>
+            <th>Loan Amount</th>
+            <th>Interest Rate</th>
+            <th>Actions</th>
+        </tr>
+        <tr th:each="enquiry : ${enquiries}">
+            <td th:text="${enquiry.id}"></td>
+            <td th:text="${enquiry.customerName}"></td>
+            <td th:text="${enquiry.jobType}"></td>
+            <td th:text="${enquiry.loanAmount}"></td>
+            <td th:text="${enquiry.interestRate}"></td>
+            <td>
+                <form action="#" th:action="'/enquiry/'+${enquiry.id}" method="get">
+                    <button type="submit">
+                        View
+                    </button>
+                </form>
+                <div th:if="${(enquiry.approval == null || enquiry.approval.recommendedUser == null) && (enquiry.approval == null ||enquiry.approval.approvalStatus != true)}">
+                    <form action="#" th:action="'/enquiry/recommend/'+${enquiry.id}" method="post">
+                        <button type="submit">Recommend</button>
+                    </form>
+                </div>
+                <div th:if="${enquiry.approval == null || enquiry.approval.approvalStatus == false}">
+                    <form action="#" th:action="'/enquiry/approval/'+${enquiry.id}" method="post">
+                        <button type="submit">Approve</button>
+                    </form>
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+<script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
 </body>
 </html>

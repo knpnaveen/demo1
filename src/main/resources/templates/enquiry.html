@@ -1,25 +1,47 @@
 <!DOCTYPE HTML>
 <html xmlns:th="https://www.thymeleaf.org">
 <head>
-    <title>Getting Started: Handling Form Submission</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <title>Enquiry Portal</title>
+    <link th:rel="stylesheet" th:href="@{assets/select2-develop/dist/css/select2.css}"/>
+    <link th:rel="stylesheet" th:href="@{assets/select2-bootstrap4-theme-master/dist/select2-bootstrap4.css}"/>
+    <link th:rel="stylesheet" th:href="@{webjars/bootstrap/4.0.0-2/css/bootstrap.min.css} "/>
 </head>
 <body>
 <h1>Enquiry Form</h1>
+<div th:if="${success != null}">
+    <h2 th:object="{success}"></h2>
+</div>
 <form action="#" th:action="@{/enquiry}" th:object="${enquiry}" method="post">
-    <p>Id : <input type="text" th:field="*{id}" /></p>
-    <p>Customer Name : <input type="text" th:field="*{customerName}" /></p>
-    <p>Job Type :
-    <select>
-        <option th:each="jobType : ${T(com.example.demo.model.Enquiry.JobType).values()}"
-                th:value="${jobType.name()}"
-                th:text="${jobType.displayText}">
+    <div th:if="${id != null}">
+        <div>Id : <input type="text" th:field="*{id}" /></div>
+    </div>
+    <div>Customer Name : <input type="text" th:field="*{customerName}" /></div>
+    <div>Job Type :
+        <select name="jobType" th:field="*{jobType}">
+        <div th:if="${jobType == null}">
+        <option th:each="jobType : ${T(com.example.demo.model.JobType).values()}"
+                th:value="${jobType}"
+                th:text="${jobType}"
+        >
         </option>
+        </div>
+        <div th:if="${jobType != null}">
+            <option value="${jobType}"
+            >
+        </div>
     </select>
-    </p>
-    <p>Loan Amount : <input type="number" th:field="*{loanAmount}" /></p>
-    <p>Interest Rate : <input type="number" th:field="*{interestRate}" /></p>
-    <p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /></p>
+    </div>
+    <div>Loan Amount : <input type="number" th:field="*{loanAmount}" /></div>
+    <div>Interest Rate : <input type="number" th:field="*{interestRate}" /></div>
+    <div><input type="submit" value="Submit"/> <input type="reset" value="Reset" /></div>
+    <div th:if="${#fields.hasAnyErrors()}">
+        <ul>
+            <li th:each="err : ${#fields.allErrors()}" th:text="${err}" />
+        </ul>
+    </div>
 </form>
+<script th:src="@{/webjars/jquery/jquery.min.js}"></script>
+<script th:src="@{/webjars/popper.js/umd/popper.min.js}"></script>
+<script th:src="@{/webjars/bootstrap/js/bootstrap.min.js}"></script>
 </body>
 </html>
