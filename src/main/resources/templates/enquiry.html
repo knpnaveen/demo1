@@ -2,20 +2,18 @@
 <html xmlns:th="https://www.thymeleaf.org">
 <head>
     <title>Enquiry Portal</title>
-    <link th:rel="stylesheet" th:href="@{assets/select2-develop/dist/css/select2.css}"/>
-    <link th:rel="stylesheet" th:href="@{assets/select2-bootstrap4-theme-master/dist/select2-bootstrap4.css}"/>
     <link th:rel="stylesheet" th:href="@{webjars/bootstrap/4.0.0-2/css/bootstrap.min.css} "/>
 </head>
 <body>
 <h1>Enquiry Form</h1>
 <div th:if="${success != null}">
-    <h2 th:object="{success}"></h2>
+    <h2 th:text="${success}"></h2>
 </div>
 <form action="#" th:action="@{/enquiry}" th:object="${enquiry}" method="post">
     <div th:if="${id != null}">
         <div>Id : <input type="text" th:field="*{id}" /></div>
     </div>
-    <div>Customer Name : <input type="text" th:field="*{customerName}" /></div>
+    <div>Customer Name : <input type="text" th:field="*{customerName}"/></div>
     <div>Job Type :
         <select name="jobType" th:field="*{jobType}">
         <div th:if="${jobType == null}">

@@ -2,8 +2,6 @@
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
 <head>
     <title>Enquiry Portal</title>
-    <link th:rel="stylesheet" th:href="@{assets/select2-develop/dist/css/select2.css}"/>
-    <link th:rel="stylesheet" th:href="@{assets/select2-bootstrap4-theme-master/dist/select2-bootstrap4.css}"/>
     <link th:rel="stylesheet" th:href="@{webjars/bootstrap/4.0.0-2/css/bootstrap.min.css} "/>
 </head>
 <body>
@@ -13,7 +11,13 @@
 </div>
 </h1>
 <div th:if="${not #lists.isEmpty(enquiries)}">
-    <h2>Enquiries List</h2>
+    <h1>Enquiries List</h1>
+    <div th:if="${success != null}">
+        <h2 th:text="${success}"></h2>
+    </div>
+    <div th:if="${error != null}">
+        <h2 th:text="${error}"></h2>
+    </div>
     <table class="table table-striped">
         <tr>
             <th>Id</th>

@@ -3,18 +3,17 @@ package com.example.demo.controller;
 import com.example.demo.model.Approval;
 import com.example.demo.model.Enquiry;
 import com.example.demo.repository.EnquiryRepository;
-import org.springframework.security.core.AuthenticatedPrincipal;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.servlet.view.RedirectView;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,9 +39,11 @@ public class AppController {
     }
 
     @PostMapping("/enquiry")
-    public String enquirySubmit(Authentication authentication, @ModelAttribute Enquiry enquiry, BindingResult result, Model model,RedirectAttributes redirectAttrs){
+    public Object enquirySubmit(Authentication authentication, @Valid Enquiry enquiry, BindingResult result, Model model, RedirectAttributes redirectAttrs){
+        RedirectView redirectView= new RedirectView("/home",true);
+        redirectView.setExposeModelAttributes(false);
         if (result.hasErrors()) {
-            return "errors/enquiry";
+            return "enquiry";
         }
         if (enquiry.getInterestRate() > 16){
             Approval approval = new Approval();
@@ -52,23 +53,20 @@ public class AppController {
         }
         Enquiry savedEnquiry = enquiryRepository.save(enquiry);
         redirectAttrs.addAttribute("success","Enquiry "+savedEnquiry.getId()+" created");
-        return "redirect:/enquiry";
+        return redirectView;
     }
 
     @GetMapping("/enquiry/{id}")
     public String enquiryForm(@PathVariable Long id, Model model){
         Optional<Enquiry> enquiry = enquiryRepository.findById(id);
-        if (enquiry.isPresent() && enquiry.get().getApproval().getApprovalStatus()){
-            model.addAttribute("readonly",Boolean.TRUE);
-        }else {
-            model.addAttribute("readonly",Boolean.FALSE);
-        }
         model.addAttribute("enquiry", enquiry);
         return "enquiry";
     }
 
     @PostMapping("/enquiry/recommend/{id}")
-    public String recommend(@PathVariable Long id, Authentication authentication, RedirectAttributes redirectAttrs){
+    public RedirectView recommend(@PathVariable Long id, Authentication authentication, RedirectAttributes redirectAttrs){
+        RedirectView redirectView= new RedirectView("/home",true);
+        redirectView.setExposeModelAttributes(false);
         if (Optional.ofNullable(id).isPresent()){
             Enquiry enquiry = enquiryRepository.findById(id).get();
             if (enquiry.getInterestRate() >= 14 && enquiry.getInterestRate() <= 16 && authentication.getName().equals("role2")){
@@ -86,11 +84,13 @@ public class AppController {
         }else {
             redirectAttrs.addAttribute("error","Invalid Request");
         }
-        return "redirect:/home";
+        return redirectView;
     }
 
     @PostMapping("/enquiry/approval/{id}")
-    public String approval(@PathVariable Long id,Authentication authentication,RedirectAttributes redirectAttrs){
+    public RedirectView approval(@PathVariable Long id, Authentication authentication, RedirectAttributes redirectAttrs){
+        RedirectView redirectView= new RedirectView("/home",true);
+        redirectView.setExposeModelAttributes(false);
         if (Optional.ofNullable(id).isPresent()){
             Enquiry enquiry = enquiryRepository.findById(id).get();
             if ((enquiry.getInterestRate() >= 14 && enquiry.getInterestRate() <= 16 && authentication.getName().equals("role2"))
@@ -109,6 +109,6 @@ public class AppController {
         }else {
             redirectAttrs.addAttribute("error","Invalid Request");
         }
-        return "redirect:/home";
+        return redirectView;
     }
 }
